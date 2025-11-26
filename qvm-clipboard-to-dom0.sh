@@ -59,10 +59,10 @@ if [ "$orig_bytes" -gt "$MAX_CLIPBOARD_SIZE" ]; then
 fi
 
 # Sanitize clipboard. Keep only:
-#   \t  = tab           0x09, octal 011
-#   \n  = newline       0x0A, octal 012
-#   \r  = carriage ret  0x0D, octal 015
-#   Safe ASCII Range	space (0x20, octal 040) to tilde (0x7E, octal 176)
+#   \t  = tab           0x09
+#   \n  = newline       0x0A
+#   \r  = carriage ret  0x0D
+#   Safe ASCII Range	space (0x20) to tilde (0x7E)
 sanitized=$(LC_ALL=C tr -cd '\t\n\r -~' < "$CLIPFILE")
 
 # Check if anything is left after filtering
@@ -81,14 +81,13 @@ if [ "$removed_bytes" -gt 0 ]; then
     # Abort if filtering occurred?
     if [ "$ALLOW_FILTERED" -ne 1 ]; then
     	notify-send -t $NOTIFY_TIMEOUT "Dom0 clipboard" "ERROR: Clipboard from '$source_qube' contained unsafe characters. You can set ALLOW_FILTERED=1"
-        exit 0
+        exit 1
     fi
 
     # Show the warning longer, it's important to read
     notify-send -t $((NOTIFY_TIMEOUT*2)) "Dom0 clipboard" "WARNING: $removed_bytes unsafe bytes from '$source_qube' removed. Copied content is incomplete, check before use"
 fi
 
-# For information only (does not affect behavior)
 chars=$(printf '%s' "$sanitized" | LC_ALL=C wc -m)
 
 # Copy sanitized content into dom0 clipboard
