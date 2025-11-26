@@ -28,7 +28,7 @@
 CLIPFILE=/run/qubes/qubes-clipboard.bin
 SOURCEFILE=/run/qubes/qubes-clipboard.bin.source
 NOTIFY_TIMEOUT=7500 # Notification duration (in ms). Long enough to keep user informed
-MAX_CLIPBOARD_SIZE=$((10 * 1024**2)) # 10 MiB
+MAX_CLIPBOARD_SIZE=$((10*1024*1024)) # 10 MiB
 
 # Behavior when filtering removed any characters:
 #   0 - Abort with error
@@ -76,7 +76,7 @@ sanitized_bytes=$(printf '%s' "$sanitized" | LC_ALL=C wc -c)
 
 # Detect if any bytes were removed (sanitization changed content size)
 # Note: This detects any removal, not just non-ASCII; but thats what we want.
-removed_bytes=$(($orig_bytes - $sanitized_bytes))
+removed_bytes=$((orig_bytes - sanitized_bytes))
 if [ "$removed_bytes" -gt 0 ]; then
     # Abort if filtering occurred?
     if [ "$ALLOW_FILTERED" -ne 1 ]; then
@@ -85,7 +85,7 @@ if [ "$removed_bytes" -gt 0 ]; then
     fi
 
     # Show the warning longer, it's important to read
-    notify-send -t $(($NOTIFY_TIMEOUT*2)) "Dom0 clipboard" "WARNING: $removed_bytes unsafe bytes from '$source_qube' removed. Copied content is incomplete, check before use"
+    notify-send -t $((NOTIFY_TIMEOUT*2)) "Dom0 clipboard" "WARNING: $removed_bytes unsafe bytes from '$source_qube' removed. Copied content is incomplete, check before use"
 fi
 
 # For information only (does not affect behavior)
